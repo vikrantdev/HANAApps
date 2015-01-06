@@ -78,11 +78,11 @@
         initialPage : idPageMain
     }); // page1 should be displayed first
     // Create a tile for the current weather in Lisbon
-    var oModelWeatherCity1 = getModelFromURL("/openweathermap?q=:Lisbon");
+    var oModelWeatherCity1 = getModelFromURL("/openweathermap?q=:Bangalore");
     var weatherTileCity1 = buildWeatherTile("myWeatherTileCity1", oModelWeatherCity1);
  
     // Create another tile for the current weather in another city
-    var oModelWeatherOther = getModelFromURL("/openweathermap?q=Neustadt an der Weinstrasse");
+    var oModelWeatherOther = getModelFromURL("/openweathermap?q=New York");
     var weatherTileOther = buildWeatherTile("myWeatherTileOther", oModelWeatherOther);
     // Now create the page and place it into the HTML document
     var mainPage = buildMainPage(idPageMain, "Lightweight HTML5 apps and Git on SAP HANA Cloud Platform", [weatherTileCity1,weatherTileOther ]);
