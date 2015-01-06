@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>Lightweight HTML5 apps and Git on SAP HANA Cloud Platform</title>
+<script src="/sapui5/sap-ui-core.js"
+    type="text/javascript" id="sap-ui-bootstrap"
+    data-sap-ui-libs="sap.ui.commons, sap.suite.ui.commons, sap.m"
+    data-sap-ui-theme="sap_bluecrystal">
+</script>
+<script type="text/javascript">
+    // #####################################
+    // Model - Start
+    // #####################################
+    var getModelFromURL = function(url) {
+        var url = url;
+        var oModel = new sap.ui.model.json.JSONModel();
+        oModel.loadData(url, null, false);
+        return oModel;
+    };
+    // Model - End
+    // #####################################
+    // Views - Start
+    // #####################################
+    // builds the main page
+    var buildMainPage = function(id, title, content) {
+        var page = new sap.m.Page(id, {
+            title : title,
+            showNavButton : false,
+            content : content
+        });
+        return page;
+    };
+    // builds the weather tile
+    var buildWeatherTile = function(id, oModel) {
+        var tile = new sap.m.StandardTile(id, {
+            numberUnit : "Celsius",
+            infoState : "Success",
+            press : function() {
+                var link = "http://openweathermap.org/city/" + oModel.oData.id;
+                window.open(link, "_blank");
+            },
+            tap : function() {
+                var link = "http://openweathermap.org/city/" + oModel.oData.id;
+                window.open(link, "_blank");
+            }
+        });
+        // Bind weather icon
+        tile.bindProperty("icon", "/weather/0/icon", function(bValue) {
+            return "http://openweathermap.org/img/w/" + bValue + ".png";
+        });
+        tile.setModel(oModel);
+        // Bind name of city to the tile title
+        tile.bindProperty("title", "/name", function(bValue) {
+            var longTitle = "Current weather in " + bValue;
+            return longTitle;
+        });
+        // Bind weather details to info field of tile
+        tile.bindProperty("info", "/weather/0/description");
+        // Bind temperature to the number field of the tile
+        tile.bindProperty("number", "/main/temp", function(bValue) {
+            // We want Celsius
+            var degreesCelsius = Math.round(bValue - 273.15);
+            // Also add the Celsius sign to the temperature value
+            //Switch to Fahrenheit
+            //var degreesFahrenheit = Math.round(((bValue - 273.15) * 9/5) + 32);
+            //return degreesFahrenheit + "\u00b0";
+            return degreesCelsius + "\u00b0";
+        });
+        return tile;
+    };
+    // Views - End
+    // #####################################
+    // Main SAPUI5 application - Start
+    // #####################################
+    var idPageMain = "main";
+    var app = new sap.m.App("myApp", {
+        initialPage : idPageMain
+    }); // page1 should be displayed first
+    // Create a tile for the current weather in Lisbon
+    var oModelWeatherCity1 = getModelFromURL("/openweathermap?q=:Lisbon");
+    var weatherTileCity1 = buildWeatherTile("myWeatherTileCity1", oModelWeatherCity1);
+ 
+    // Create another tile for the current weather in another city
+    var oModelWeatherOther = getModelFromURL("/openweathermap?q=Neustadt an der Weinstrasse");
+    var weatherTileOther = buildWeatherTile("myWeatherTileOther", oModelWeatherOther);
+    // Now create the page and place it into the HTML document
+    var mainPage = buildMainPage(idPageMain, "Lightweight HTML5 apps and Git on SAP HANA Cloud Platform", [weatherTileCity1,weatherTileOther ]);
+    app.addPage(mainPage);
+    app.placeAt("content");
+    // Main SAPUI5 application - End
+    // #####################################
+</script>
+</head>
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
+</html>
